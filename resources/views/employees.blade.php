@@ -11,7 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-
+<p id="role" style="display: none;"> {{ Auth::user()->role }}</p>
 <div class="container mt-5">
 <div class="d-flex align-items-center justify-content-between mb-4">
     <h2 class="mb-0">Employees</h2>
@@ -38,7 +38,7 @@
 </form>
 
         <!-- Add Employee Button -->
-        <a href="{{ route('addEmp') }}" class="btn btn-primary btn-sm">Add Employee</a>
+        <a href="{{ route('addEmp') }}" id="addEmp" class="btn btn-primary btn-sm">Add Employee</a>
     </div>
 </div>
 
@@ -65,8 +65,8 @@
                 <td>{{ $employee->created_at }}</td>
                 <td>
                     <a href="{{ route('view', $employee->id) }}"  class="btn btn-primary btn-sm">View</a>
-                    <a href="{{ route('editEmp', $employee->id) }}" class="btn btn-warning btn-sm">Update</a>
-                    <a href="{{ route('deleteEmp', $employee->id) }}" class="btn btn-danger btn-sm">Delete</a>
+                    <a href="{{ route('editEmp', $employee->id) }}" id="updateBtn" class="btn btn-warning btn-sm">Update</a>
+                    <a href="{{ route('deleteEmp', $employee->id) }}" id="deleteBtn" class="btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>
             @endforeach
@@ -106,7 +106,44 @@
 
         });
     });
-        </script>
+    //Manipulate CRUD operations based on user role
+    document.addEventListener('DOMContentLoaded', function () {
+    var addEmp = document.getElementById('addEmp');
+    var getRoleElement = document.getElementById('role');
+    var deleteEmp = document.querySelectorAll('[id="deleteBtn"]');
+    var updateBtn = document.querySelectorAll('[id="updateBtn"]');
+
+    // Check if the elements exist
+    if (getRoleElement) {
+        var getRole = getRoleElement.innerText.trim(); // Get role and remove extra spaces
+
+        // Hide the button if the role is 'Admin'
+        if(getRole === 'Update') {
+            addEmp.style.display = 'none';
+
+            //Loop all occurences of a delete button
+            deleteEmp.forEach(element => {
+                element.style.display = 'none';
+            });
+        }
+        else if(getRole === 'View') {
+            addEmp.style.display = 'none';
+
+            //Loop through each delete and update buttons to hide
+            deleteEmp.forEach(element => {
+                element.style.display = 'none';
+            });
+            updateBtn.forEach(element => {
+                element.style.display = 'none';
+            });
+        }
+    }
+    else {
+        console.error('Element not found: Ensure that elements with IDs "addEmp" and "role" exist.');
+    }
+});
+
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
